@@ -3,10 +3,12 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import authRoutes from './routes/authRoutes.js';
+import urlRoutes from './routes/urlRoutes.js';
 
 
 import { env } from './config/env.js';
 import { errorHandler, notFound } from './middleware/errorMiddleware.js';
+import { redirectShortUrl } from './controllers/urlController.js';
 
 const app = express();
 
@@ -25,6 +27,9 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/urls', urlRoutes);
+
+app.get('/:shortCode', redirectShortUrl);
 
 app.use(notFound);
 app.use(errorHandler);
