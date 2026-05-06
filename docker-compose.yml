@@ -33,5 +33,17 @@ services:
       - mongo
       - redis
 
+  frontend:
+    build:
+      context: ./frontend
+    container_name: linkbin-frontend
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: http://localhost:5000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
 volumes:
   mongo-data:

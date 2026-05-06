@@ -53,6 +53,15 @@ MongoDB and Redis are expected locally. On the personal PC, use Docker Compose:
 docker compose up --build
 ```
 
+## Local Frontend Setup
+
+```bash
+cd frontend
+npm install
+cp .env.example .env
+npm run dev
+```
+
 ## Documentation
 
 See the `docs/` folder for HLD, LLD, database schema, API contract, Redis usage, caching strategy, rate limiting strategy, Docker setup, and interview explanation.
