@@ -1,6 +1,6 @@
 # LinkBin
 
-LinkBin is a MERN stack URL shortener and paste sharing platform.
+LinkBin is a MERN stack URL shortener and paste sharing platform built as an interview-ready backend-heavy project.
 
 ## Core Features
 
@@ -23,3 +23,36 @@ LinkBin is a MERN stack URL shortener and paste sharing platform.
 - JWT
 - Docker
 - Docker Compose
+
+## Backend APIs
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
+- `POST /api/urls`
+- `GET /api/urls`
+- `GET /:shortCode`
+- `POST /api/pastes`
+- `GET /api/pastes`
+- `GET /p/:slug`
+- `GET /api/dashboard/summary`
+- `GET /api/docs`
+
+## Local Backend Setup
+
+```bash
+cd backend
+npm install
+cp .env.example .env
+npm run dev
+```
+
+MongoDB and Redis are expected locally. On the personal PC, use Docker Compose:
+
+```bash
+docker compose up --build
+```
+
+## Documentation
+
+See the `docs/` folder for HLD, LLD, database schema, API contract, Redis usage, caching strategy, rate limiting strategy, Docker setup, and interview explanation.
