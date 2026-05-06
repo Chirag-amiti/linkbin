@@ -9,6 +9,7 @@ import {
   updateMyShortUrl,
 } from '../controllers/urlController.js';
 import { protect } from '../middleware/authMiddleware.js';
+import { urlCreateRateLimit } from '../middleware/rateLimiter.js';
 import { validateRequest } from '../middleware/validateRequest.js';
 import { createUrlSchema, updateUrlSchema, urlIdParamSchema } from '../validators/urlValidator.js';
 
@@ -16,7 +17,7 @@ const router = express.Router();
 
 router.use(protect);
 
-router.route('/').get(listMyShortUrls).post(validateRequest(createUrlSchema), createShortUrl);
+router.route('/').get(listMyShortUrls).post(urlCreateRateLimit, validateRequest(createUrlSchema), createShortUrl);
 
 router.get('/:id/analytics', validateRequest(urlIdParamSchema), getMyUrlAnalytics);
 

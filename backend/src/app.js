@@ -2,7 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import swaggerUi from 'swagger-ui-express';
 import authRoutes from './routes/authRoutes.js';
+import dashboardRoutes from './routes/dashboardRoutes.js';
 import pasteRoutes from './routes/pasteRoutes.js';
 import urlRoutes from './routes/urlRoutes.js';
 
@@ -12,6 +14,8 @@ import { errorHandler, notFound } from './middleware/errorMiddleware.js';
 import { redirectShortUrl } from './controllers/urlController.js';
 import { viewPasteBySlug } from './controllers/pasteController.js';
 import { optionalAuth } from './middleware/optionalAuthMiddleware.js';
+import { redirectRateLimit } from './middleware/rateLimiter.js';
+import { swaggerSpec } from './docs/swagger.js';
 
 const app = express();
 
@@ -29,12 +33,14 @@ app.get('/health', (req, res) => {
   });
 });
 
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/auth', authRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/pastes', pasteRoutes);
 app.use('/api/urls', urlRoutes);
 
 app.get('/p/:slug', optionalAuth, viewPasteBySlug);
-app.get('/:shortCode', redirectShortUrl);
+app.get('/:shortCode', redirectRateLimit, redirectShortUrl);
 
 app.use(notFound);
 app.use(errorHandler);

@@ -9,6 +9,7 @@ import {
   updateMyPaste,
 } from '../controllers/pasteController.js';
 import { protect } from '../middleware/authMiddleware.js';
+import { pasteCreateRateLimit } from '../middleware/rateLimiter.js';
 import { validateRequest } from '../middleware/validateRequest.js';
 import { createPasteSchema, pasteIdParamSchema, updatePasteSchema } from '../validators/pasteValidator.js';
 
@@ -16,7 +17,7 @@ const router = express.Router();
 
 router.use(protect);
 
-router.route('/').get(listMyPastes).post(validateRequest(createPasteSchema), createPaste);
+router.route('/').get(listMyPastes).post(pasteCreateRateLimit, validateRequest(createPasteSchema), createPaste);
 
 router.get('/:id/analytics', validateRequest(pasteIdParamSchema), getMyPasteAnalytics);
 
