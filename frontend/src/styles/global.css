@@ -263,6 +263,17 @@ h3 {
   font-weight: 700;
 }
 
+.required {
+  color: var(--danger);
+  font-weight: 900;
+}
+
+.optional {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 650;
+}
+
 input,
 textarea,
 select {

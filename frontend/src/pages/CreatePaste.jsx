@@ -2,6 +2,25 @@ import { useState } from 'react';
 
 import { createPaste } from '../api/pasteApi.js';
 
+const languageOptions = [
+  'text',
+  'javascript',
+  'typescript',
+  'jsx',
+  'json',
+  'html',
+  'css',
+  'bash',
+  'powershell',
+  'python',
+  'java',
+  'csharp',
+  'sql',
+  'yaml',
+  'markdown',
+  'log',
+];
+
 const CreatePaste = () => {
   const [form, setForm] = useState({
     title: '',
@@ -55,19 +74,25 @@ const CreatePaste = () => {
         {error && <p className="alert">{error}</p>}
         <div className="form-grid">
           <label>
-            Title
+            Title <span className="optional">(optional)</span>
             <input name="title" value={form.title} onChange={handleChange} />
           </label>
           <label>
-            Custom slug
+            Custom slug <span className="optional">(optional)</span>
             <input name="slug" placeholder="jwt-error-log" value={form.slug} onChange={handleChange} />
           </label>
           <label>
-            Language
-            <input name="language" placeholder="javascript" value={form.language} onChange={handleChange} />
+            Language <span className="required">*</span>
+            <select name="language" value={form.language} onChange={handleChange} required>
+              {languageOptions.map((language) => (
+                <option key={language} value={language}>
+                  {language}
+                </option>
+              ))}
+            </select>
           </label>
           <label>
-            Visibility
+            Visibility <span className="required">*</span>
             <select name="visibility" value={form.visibility} onChange={handleChange}>
               <option value="public">Public</option>
               <option value="unlisted">Unlisted</option>
@@ -75,12 +100,12 @@ const CreatePaste = () => {
             </select>
           </label>
           <label>
-            Expiry in hours
+            Expiry in hours <span className="optional">(optional)</span>
             <input name="expiresInHours" type="number" min="1" value={form.expiresInHours} onChange={handleChange} />
           </label>
         </div>
         <label>
-          Content
+          Content <span className="required">*</span>
           <textarea name="content" rows="16" value={form.content} onChange={handleChange} required />
         </label>
         <button className="button primary" type="submit" disabled={isSubmitting}>

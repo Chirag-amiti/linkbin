@@ -52,19 +52,19 @@ const CreateUrl = () => {
         <h1>Create Short URL</h1>
         {error && <p className="alert">{error}</p>}
         <label>
-          Long URL
+          Long URL <span className="required">*</span>
           <input name="originalUrl" type="url" value={form.originalUrl} onChange={handleChange} required />
         </label>
         <label>
-          Custom alias
+          Custom alias <span className="optional">(optional)</span>
           <input name="customAlias" placeholder="run-shoes" value={form.customAlias} onChange={handleChange} />
         </label>
         <label>
-          Title
+          Title <span className="optional">(optional)</span>
           <input name="title" placeholder="LinkedIn campaign" value={form.title} onChange={handleChange} />
         </label>
         <label>
-          Expiry in hours
+          Expiry in hours <span className="optional">(optional)</span>
           <input name="expiresInHours" type="number" min="1" value={form.expiresInHours} onChange={handleChange} />
         </label>
         <button className="button primary" type="submit" disabled={isSubmitting}>

@@ -1,14 +1,18 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../context/AuthContext.jsx';
 
 const Login = () => {
-  const { login } = useAuth();
+  const { isAuthenticated, login } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const handleChange = (event) => {
     setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
@@ -35,11 +39,11 @@ const Login = () => {
         <h1>Login</h1>
         {error && <p className="alert">{error}</p>}
         <label>
-          Email
+          Email <span className="required">*</span>
           <input name="email" type="email" value={form.email} onChange={handleChange} required />
         </label>
         <label>
-          Password
+          Password <span className="required">*</span>
           <input name="password" type="password" value={form.password} onChange={handleChange} required />
         </label>
         <button className="button primary" type="submit" disabled={isSubmitting}>
