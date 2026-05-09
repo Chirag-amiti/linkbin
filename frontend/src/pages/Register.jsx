@@ -39,15 +39,15 @@ const Register = () => {
         <h1>Register</h1>
         {error && <p className="alert">{error}</p>}
         <label>
-          Name <span className="required">*</span>
+          <span className="field-label">Name <span className="required">*</span></span>
           <input name="name" value={form.name} onChange={handleChange} required />
         </label>
         <label>
-          Email <span className="required">*</span>
+          <span className="field-label">Email <span className="required">*</span></span>
           <input name="email" type="email" value={form.email} onChange={handleChange} required />
         </label>
         <label>
-          Password <span className="required">*</span>
+          <span className="field-label">Password <span className="required">*</span></span>
           <input name="password" type="password" minLength={8} value={form.password} onChange={handleChange} required />
         </label>
         <button className="button primary" type="submit" disabled={isSubmitting}>

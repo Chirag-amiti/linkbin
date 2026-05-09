@@ -39,11 +39,11 @@ const Login = () => {
         <h1>Login</h1>
         {error && <p className="alert">{error}</p>}
         <label>
-          Email <span className="required">*</span>
+          <span className="field-label">Email <span className="required">*</span></span>
           <input name="email" type="email" value={form.email} onChange={handleChange} required />
         </label>
         <label>
-          Password <span className="required">*</span>
+          <span className="field-label">Password <span className="required">*</span></span>
           <input name="password" type="password" value={form.password} onChange={handleChange} required />
         </label>
         <button className="button primary" type="submit" disabled={isSubmitting}>

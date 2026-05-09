@@ -14,7 +14,7 @@ const Navbar = () => {
 
   return (
     <header className="topbar">
-      <Link className="brand" to="/">
+      <Link className="brand" to={isAuthenticated ? '/dashboard' : '/'}>
         <span className="brand-mark">LB</span>
         <span>LinkBin</span>
       </Link>

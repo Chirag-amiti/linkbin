@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 
 import { createPaste } from '../api/pasteApi.js';
 
@@ -33,6 +34,7 @@ const CreatePaste = () => {
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLanguageOpen, setIsLanguageOpen] = useState(false);
 
   const handleChange = (event) => {
     setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
@@ -74,25 +76,49 @@ const CreatePaste = () => {
         {error && <p className="alert">{error}</p>}
         <div className="form-grid">
           <label>
-            Title <span className="optional">(optional)</span>
+            <span className="field-label">Title <span className="optional">(optional)</span></span>
             <input name="title" value={form.title} onChange={handleChange} />
           </label>
           <label>
-            Custom slug <span className="optional">(optional)</span>
+            <span className="field-label">Custom slug <span className="optional">(optional)</span></span>
             <input name="slug" placeholder="jwt-error-log" value={form.slug} onChange={handleChange} />
           </label>
+          <div className="field">
+            <span className="field-label">Language <span className="required">*</span></span>
+            <div className="custom-select">
+              <button
+                className="custom-select-trigger"
+                type="button"
+                onClick={() => setIsLanguageOpen((current) => !current)}
+                aria-haspopup="listbox"
+                aria-expanded={isLanguageOpen}
+              >
+                <span>{form.language}</span>
+                <ChevronDown size={17} />
+              </button>
+              {isLanguageOpen && (
+                <div className="custom-select-menu" role="listbox">
+                  {languageOptions.map((language) => (
+                    <button
+                      className={language === form.language ? 'selected' : ''}
+                      key={language}
+                      type="button"
+                      onClick={() => {
+                        setForm((current) => ({ ...current, language }));
+                        setIsLanguageOpen(false);
+                      }}
+                      role="option"
+                      aria-selected={language === form.language}
+                    >
+                      {language}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
           <label>
-            Language <span className="required">*</span>
-            <select name="language" value={form.language} onChange={handleChange} required>
-              {languageOptions.map((language) => (
-                <option key={language} value={language}>
-                  {language}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Visibility <span className="required">*</span>
+            <span className="field-label">Visibility <span className="required">*</span></span>
             <select name="visibility" value={form.visibility} onChange={handleChange}>
               <option value="public">Public</option>
               <option value="unlisted">Unlisted</option>
@@ -100,12 +126,12 @@ const CreatePaste = () => {
             </select>
           </label>
           <label>
-            Expiry in hours <span className="optional">(optional)</span>
+            <span className="field-label">Expiry in hours <span className="optional">(optional)</span></span>
             <input name="expiresInHours" type="number" min="1" value={form.expiresInHours} onChange={handleChange} />
           </label>
         </div>
         <label>
-          Content <span className="required">*</span>
+          <span className="field-label">Content <span className="required">*</span></span>
           <textarea name="content" rows="16" value={form.content} onChange={handleChange} required />
         </label>
         <button className="button primary" type="submit" disabled={isSubmitting}>

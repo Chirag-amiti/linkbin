@@ -1,7 +1,16 @@
 import { Link } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { FileText, Link2, ShieldCheck, Zap } from 'lucide-react';
 
+import { useAuth } from '../context/AuthContext.jsx';
+
 const Home = () => {
+  const { isAuthenticated } = useAuth();
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return (
     <main className="page">
       <section className="hero">
