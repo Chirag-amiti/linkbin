@@ -9,6 +9,7 @@ import { getPasteAnalytics, recordPasteView } from '../services/pasteAnalyticsSe
 import { env } from '../config/env.js';
 
 const buildPasteLink = (slug) => `${env.baseUrl}/p/${slug}`;
+const buildExpiredUrl = () => `${env.clientUrl}/expired?type=paste`;
 
 const ensureObjectId = (id) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -175,7 +176,7 @@ export const viewPasteBySlug = asyncHandler(async (req, res) => {
   }
 
   if (paste.expiresAt && paste.expiresAt <= new Date()) {
-    throw new ApiError(410, 'Paste has expired');
+    return res.redirect(302, buildExpiredUrl());
   }
 
   assertPasteAccess(paste, req.user);

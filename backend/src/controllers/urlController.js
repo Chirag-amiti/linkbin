@@ -10,6 +10,7 @@ import { getUrlAnalytics, recordUrlClick } from '../services/urlAnalyticsService
 import { env } from '../config/env.js';
 
 const buildShortUrl = (shortCode) => `${env.baseUrl}/${shortCode}`;
+const buildExpiredUrl = (type) => `${env.clientUrl}/expired?type=${type}`;
 
 const getExpiryDate = ({ expiresAt, expiresInHours }) => {
   if (expiresAt) return expiresAt;
@@ -189,7 +190,7 @@ export const redirectShortUrl = asyncHandler(async (req, res) => {
   }
 
   if (shortUrl.expiresAt && shortUrl.expiresAt <= new Date()) {
-    throw new ApiError(410, 'Short URL has expired');
+    return res.redirect(302, buildExpiredUrl('url'));
   }
 
   await setCachedUrl(shortUrl);

@@ -6,6 +6,17 @@ const hash = (value) => {
   return crypto.createHash('sha256').update(value || 'unknown').digest('hex');
 };
 
+const isLocalOrPrivateIp = (ip = '') => {
+  return (
+    ip === '::1' ||
+    ip === '127.0.0.1' ||
+    ip === '::ffff:127.0.0.1' ||
+    ip.startsWith('192.168.') ||
+    ip.startsWith('10.') ||
+    /^172\.(1[6-9]|2\d|3[0-1])\./.test(ip)
+  );
+};
+
 export const getClientIp = (req) => {
   const forwardedFor = req.headers['x-forwarded-for'];
 
@@ -21,6 +32,7 @@ export const getVisitorMeta = (req) => {
   const userAgent = req.headers['user-agent'] || '';
   const parsedUserAgent = new UAParser(userAgent).getResult();
   const geo = geoip.lookup(ip);
+  const isLocal = isLocalOrPrivateIp(ip);
 
   return {
     visitorHash: hash(`${ip}:${userAgent}`),
@@ -30,7 +42,7 @@ export const getVisitorMeta = (req) => {
     os: parsedUserAgent.os.name || 'Unknown',
     device: parsedUserAgent.device.type || 'desktop',
     referrer: req.headers.referer || req.headers.referrer || 'direct',
-    country: geo?.country || 'Unknown',
-    city: geo?.city || 'Unknown',
+    country: geo?.country || (isLocal ? 'Local' : 'Unknown'),
+    city: geo?.city || (isLocal ? 'Private network' : 'Unknown'),
   };
 };
