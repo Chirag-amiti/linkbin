@@ -4,6 +4,23 @@ import { useParams } from 'react-router-dom';
 import { getUrlAnalytics } from '../api/urlApi.js';
 import StatCard from '../components/StatCard.jsx';
 
+const formatLocation = (event) => {
+  const city = event.city || 'Unknown';
+  const country = event.country || 'Unknown';
+  const isUnknown = city.toLowerCase() === 'unknown' && country.toLowerCase() === 'unknown';
+  const isLocal = city.toLowerCase().includes('private') || country.toLowerCase() === 'local';
+
+  if (isUnknown || isLocal) {
+    return 'Local/private network';
+  }
+
+  return `${city}, ${country}`;
+};
+
+const formatReferrer = (referrer) => {
+  return !referrer || referrer === 'direct' ? 'Direct visit' : referrer;
+};
+
 const UrlAnalytics = () => {
   const { id } = useParams();
   const [data, setData] = useState(null);
@@ -49,7 +66,7 @@ const UrlAnalytics = () => {
               <article className="row-card" key={event._id}>
                 <div>
                   <strong>{event.browser} · {event.device}</strong>
-                  <p>{event.city}, {event.country} · {event.referrer}</p>
+                  <p>{formatLocation(event)} · {formatReferrer(event.referrer)}</p>
                 </div>
                 <span className="muted">{new Date(event.clickedAt).toLocaleString()}</span>
               </article>

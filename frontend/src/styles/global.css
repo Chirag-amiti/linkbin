@@ -281,6 +281,12 @@ h3 {
   font-weight: 650;
 }
 
+.field-error {
+  color: var(--danger);
+  font-size: 13px;
+  font-weight: 650;
+}
+
 .custom-select {
   position: relative;
 }

@@ -2,25 +2,8 @@ import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 import { createPaste } from '../api/pasteApi.js';
-
-const languageOptions = [
-  'text',
-  'javascript',
-  'typescript',
-  'jsx',
-  'json',
-  'html',
-  'css',
-  'bash',
-  'powershell',
-  'python',
-  'java',
-  'csharp',
-  'sql',
-  'yaml',
-  'markdown',
-  'log',
-];
+import { getLanguageLabel, languageOptions } from '../utils/language.js';
+import { isPositiveInteger, mapApiValidationDetails, slugPattern } from '../utils/validation.js';
 
 const CreatePaste = () => {
   const [form, setForm] = useState({
@@ -33,23 +16,47 @@ const CreatePaste = () => {
   });
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
 
   const handleChange = (event) => {
     setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
+    setFieldErrors((current) => ({ ...current, [event.target.name]: '' }));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
+    setFieldErrors({});
     setResult(null);
+
+    const nextErrors = {};
+    const normalizedSlug = form.slug.trim().toLowerCase();
+
+    if (normalizedSlug && !slugPattern.test(normalizedSlug)) {
+      nextErrors.slug = 'Slug must be 3-60 characters using lowercase letters, numbers, and hyphens.';
+    }
+
+    if (!form.content.trim()) {
+      nextErrors.content = 'Paste content is required.';
+    }
+
+    if (!isPositiveInteger(form.expiresInHours)) {
+      nextErrors.expiresInHours = 'Expiry must be a positive whole number.';
+    }
+
+    if (Object.keys(nextErrors).length) {
+      setFieldErrors(nextErrors);
+      return;
+    }
+
     setIsSubmitting(true);
 
     const payload = {
       ...form,
       title: form.title || undefined,
-      slug: form.slug || undefined,
+      slug: normalizedSlug || undefined,
       language: form.language || 'text',
       expiresInHours: form.expiresInHours ? Number(form.expiresInHours) : undefined,
     };
@@ -60,6 +67,7 @@ const CreatePaste = () => {
       setForm({ title: '', slug: '', content: '', language: 'text', visibility: 'unlisted', expiresInHours: '' });
     } catch (err) {
       setError(err.message);
+      setFieldErrors(mapApiValidationDetails(err.details));
     } finally {
       setIsSubmitting(false);
     }
@@ -81,7 +89,15 @@ const CreatePaste = () => {
           </label>
           <label>
             <span className="field-label">Custom slug <span className="optional">(optional)</span></span>
-            <input name="slug" placeholder="jwt-error-log" value={form.slug} onChange={handleChange} />
+            <input
+              name="slug"
+              pattern="[a-z0-9-]{3,60}"
+              placeholder="jwt-error-log"
+              title="Use 3-60 lowercase letters, numbers, or hyphens."
+              value={form.slug}
+              onChange={handleChange}
+            />
+            {fieldErrors.slug && <span className="field-error">{fieldErrors.slug}</span>}
           </label>
           <div className="field">
             <span className="field-label">Language <span className="required">*</span></span>
@@ -93,24 +109,25 @@ const CreatePaste = () => {
                 aria-haspopup="listbox"
                 aria-expanded={isLanguageOpen}
               >
-                <span>{form.language}</span>
+                <span>{getLanguageLabel(form.language)}</span>
                 <ChevronDown size={17} />
               </button>
               {isLanguageOpen && (
                 <div className="custom-select-menu" role="listbox">
                   {languageOptions.map((language) => (
                     <button
-                      className={language === form.language ? 'selected' : ''}
-                      key={language}
+                      className={language.value === form.language ? 'selected' : ''}
+                      key={language.value}
                       type="button"
                       onClick={() => {
-                        setForm((current) => ({ ...current, language }));
+                        setForm((current) => ({ ...current, language: language.value }));
+                        setFieldErrors((current) => ({ ...current, language: '' }));
                         setIsLanguageOpen(false);
                       }}
                       role="option"
-                      aria-selected={language === form.language}
+                      aria-selected={language.value === form.language}
                     >
-                      {language}
+                      {language.label}
                     </button>
                   ))}
                 </div>
@@ -128,11 +145,13 @@ const CreatePaste = () => {
           <label>
             <span className="field-label">Expiry in hours <span className="optional">(optional)</span></span>
             <input name="expiresInHours" type="number" min="1" value={form.expiresInHours} onChange={handleChange} />
+            {fieldErrors.expiresInHours && <span className="field-error">{fieldErrors.expiresInHours}</span>}
           </label>
         </div>
         <label>
           <span className="field-label">Content <span className="required">*</span></span>
           <textarea name="content" rows="16" value={form.content} onChange={handleChange} required />
+          {fieldErrors.content && <span className="field-error">{fieldErrors.content}</span>}
         </label>
         <button className="button primary" type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Creating...' : 'Create paste'}
