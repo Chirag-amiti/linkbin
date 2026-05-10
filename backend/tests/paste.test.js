@@ -109,8 +109,8 @@ describe('Paste API', () => {
 
     await Paste.updateOne({ slug: 'expired-paste' }, { $set: { expiresAt: new Date(Date.now() - 1000) } });
 
-    const response = await request(app).get('/p/expired-paste').expect(410);
+    const response = await request(app).get('/p/expired-paste').redirects(0).expect(302);
 
-    expect(response.body.message).toBe('Paste has expired');
+    expect(response.headers.location).toBe('http://localhost:5173/expired?type=paste');
   });
 });

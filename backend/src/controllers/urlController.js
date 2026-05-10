@@ -170,6 +170,11 @@ export const redirectShortUrl = asyncHandler(async (req, res) => {
   const cachedUrl = await getCachedUrl(shortCode);
 
   if (cachedUrl) {
+    if (cachedUrl.expiresAt && new Date(cachedUrl.expiresAt) <= new Date()) {
+      await deleteCachedUrl(shortCode);
+      return res.redirect(302, buildExpiredUrl('url'));
+    }
+
     await recordUrlClick({
       shortUrlId: cachedUrl.id,
       ownerId: cachedUrl.owner,

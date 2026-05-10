@@ -4,11 +4,22 @@ import { getVisitorMeta } from '../utils/requestMeta.js';
 
 export const recordPasteView = async ({ pasteId, ownerId, req }) => {
   const meta = getVisitorMeta(req);
+  const recentDuplicateWindow = new Date(Date.now() - 10 * 1000);
 
   const existingVisit = await PasteAnalytics.exists({
     paste: pasteId,
     visitorHash: meta.visitorHash,
   });
+
+  const recentDuplicate = await PasteAnalytics.exists({
+    paste: pasteId,
+    visitorHash: meta.visitorHash,
+    viewedAt: { $gte: recentDuplicateWindow },
+  });
+
+  if (recentDuplicate) {
+    return;
+  }
 
   await PasteAnalytics.create({
     paste: pasteId,

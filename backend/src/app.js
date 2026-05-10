@@ -19,6 +19,8 @@ import { swaggerSpec } from './docs/swagger.js';
 
 const app = express();
 
+app.set('trust proxy', true);
+
 app.use(helmet());
 app.use(cors({ origin: env.clientUrl, credentials: true }));
 app.use(express.json({ limit: '1mb' }));

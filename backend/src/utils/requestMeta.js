@@ -7,13 +7,15 @@ const hash = (value) => {
 };
 
 const isLocalOrPrivateIp = (ip = '') => {
+  const normalizedIp = ip.replace('::ffff:', '');
+
   return (
-    ip === '::1' ||
-    ip === '127.0.0.1' ||
-    ip === '::ffff:127.0.0.1' ||
-    ip.startsWith('192.168.') ||
-    ip.startsWith('10.') ||
-    /^172\.(1[6-9]|2\d|3[0-1])\./.test(ip)
+    normalizedIp === '::1' ||
+    normalizedIp === '127.0.0.1' ||
+    normalizedIp === 'localhost' ||
+    normalizedIp.startsWith('192.168.') ||
+    normalizedIp.startsWith('10.') ||
+    /^172\.(1[6-9]|2\d|3[0-1])\./.test(normalizedIp)
   );
 };
 

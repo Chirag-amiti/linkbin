@@ -100,8 +100,8 @@ describe('URL Shortener API', () => {
 
     await ShortUrl.updateOne({ shortCode: 'old-link' }, { $set: { expiresAt: new Date(Date.now() - 1000) } });
 
-    const response = await request(app).get('/old-link').expect(410);
+    const response = await request(app).get('/old-link').redirects(0).expect(302);
 
-    expect(response.body.message).toBe('Short URL has expired');
+    expect(response.headers.location).toBe('http://localhost:5173/expired?type=url');
   });
 });
